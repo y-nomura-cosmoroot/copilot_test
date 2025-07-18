@@ -1,0 +1,13 @@
+# node_modulesはバージョン管理対象外
+node_modules/
+
+# ビルド成果物
+/dist/
+
+# 環境ファイル
+.env
+
+# OS・エディタ固有
+.DS_Store
+Thumbs.db
+.vscode/
