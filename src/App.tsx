@@ -11,10 +11,13 @@ export interface Assignee {
   name: string;
 }
 
+export type TodoStatus = 'TODO' | 'PROGRESS' | 'DONE';
+
 export interface Todo {
   id: string;
   text: string;
-  assignee: Assignee;
+  assignees: Assignee[];
+  status: TodoStatus;
 }
 
 /**
@@ -39,22 +42,34 @@ const App: React.FC = () => {
   /**
    * 新しいTodoを追加する
    * @param text Todo内容
-   * @param assignee 担当者
+   * @param assignees 担当者リスト
    */
-  const addTodo = (text: string, assignee: Assignee) => {
+  const addTodo = (text: string, assignees: Assignee[]) => {
     const newTodo: Todo = {
       id: crypto.randomUUID(),
       text,
-      assignee,
+      assignees,
+      status: 'TODO',
     };
     setTodos([...todos, newTodo]);
   };
 
+  /**
+   * Todoのステータスを更新する
+   * @param todoId TodoのID
+   * @param newStatus 新しいステータス
+   */
+  const updateTodoStatus = (todoId: string, newStatus: TodoStatus) => {
+    setTodos(todos.map(todo => 
+      todo.id === todoId ? { ...todo, status: newStatus } : todo
+    ));
+  };
+
   return (
-    <div style={{ maxWidth: 500, margin: '40px auto', padding: 20, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
-      <h1>Todoアプリ</h1>
+    <div style={{ maxWidth: 1200, margin: '40px auto', padding: 20, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
+      <h1>Todoアプリ（カンバン方式）</h1>
       <TodoForm assignees={assignees} onAdd={addTodo} />
-      <TodoList todos={todos} />
+      <TodoList todos={todos} onStatusChange={updateTodoStatus} />
     </div>
   );
 };

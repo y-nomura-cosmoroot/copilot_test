@@ -7,7 +7,7 @@ import { Assignee } from './App';
 
 interface TodoFormProps {
   assignees: Assignee[];
-  onAdd: (text: string, assignee: Assignee) => void;
+  onAdd: (text: string, assignees: Assignee[]) => void;
 }
 
 /**
@@ -17,19 +17,30 @@ interface TodoFormProps {
  */
 const TodoForm: React.FC<TodoFormProps> = ({ assignees, onAdd }) => {
   const [text, setText] = useState('');
-  const [assigneeId, setAssigneeId] = useState<number | ''>('');
+  const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([]);
 
   /**
    * フォーム送信時の処理
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text || assigneeId === '') return;
-    const assignee = assignees.find(a => a.id === assigneeId);
-    if (!assignee) return;
-    onAdd(text, assignee);
+    if (!text || selectedAssigneeIds.length === 0) return;
+    const selectedAssignees = assignees.filter(a => selectedAssigneeIds.includes(a.id));
+    if (selectedAssignees.length === 0) return;
+    onAdd(text, selectedAssignees);
     setText('');
-    setAssigneeId('');
+    setSelectedAssigneeIds([]);
+  };
+
+  /**
+   * 担当者の選択状態を切り替える
+   */
+  const toggleAssignee = (assigneeId: number) => {
+    setSelectedAssigneeIds(prev => 
+      prev.includes(assigneeId)
+        ? prev.filter(id => id !== assigneeId)
+        : [...prev, assigneeId]
+    );
   };
 
   return (
@@ -44,16 +55,20 @@ const TodoForm: React.FC<TodoFormProps> = ({ assignees, onAdd }) => {
         />
       </div>
       <div style={{ marginBottom: 8 }}>
-        <select
-          value={assigneeId}
-          onChange={e => setAssigneeId(Number(e.target.value))}
-          style={{ width: '70%', padding: 8, fontSize: 16 }}
-        >
-          <option value="">担当者を選択</option>
-          {assignees.map(a => (
-            <option key={a.id} value={a.id}>{a.name}</option>
+        <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>担当者を選択（複数選択可）:</label>
+        <div style={{ border: '1px solid #ccc', borderRadius: 4, padding: 8, maxHeight: 120, overflowY: 'auto' }}>
+          {assignees.map(assignee => (
+            <label key={assignee.id} style={{ display: 'block', marginBottom: 4, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={selectedAssigneeIds.includes(assignee.id)}
+                onChange={() => toggleAssignee(assignee.id)}
+                style={{ marginRight: 8 }}
+              />
+              {assignee.name}
+            </label>
           ))}
-        </select>
+        </div>
       </div>
       <button type="submit" style={{ padding: '8px 24px', fontSize: 16 }}>追加</button>
     </form>
