@@ -12,7 +12,7 @@ export interface Assignee {
 }
 
 export interface Todo {
-  id: number;
+  id: string;
   text: string;
   assignee: Assignee;
 }
@@ -42,7 +42,7 @@ const App: React.FC = () => {
    */
   const addTodo = (text: string, assignee: Assignee) => {
     const newTodo: Todo = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       text,
       assignee,
     };
