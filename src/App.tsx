@@ -30,6 +30,7 @@ const App: React.FC = () => {
       .then((res) => res.json())
       .then((data) => setAssignees(data))
       .catch((err) => {
+        console.error('Failed to fetch assignees:', err); // エラーをログに記録
         // エラー時は空配列
         setAssignees([]);
       });
