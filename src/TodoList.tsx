@@ -2,7 +2,7 @@
  * Todo一覧表示コンポーネント（カンバン方式）
  * @author y-nomura-cosmoroot
  */
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Todo, TodoStatus } from './App';
 
 interface TodoListProps {
@@ -28,7 +28,10 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onStatusChange }) => {
    * ドラッグ開始時の処理
    */
   const handleDragStart = (e: React.DragEvent, todo: Todo) => {
-    setDraggedTodo(todo);
+    // 再レンダリングを防ぐためsetDraggedTodoを遅延させる
+    setTimeout(() => {
+      setDraggedTodo(todo);
+    }, 0);
     e.dataTransfer.effectAllowed = 'move';
   };
 
@@ -76,9 +79,9 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onStatusChange }) => {
   };
 
   /**
-   * TodoItemコンポーネント
+   * TodoItemコンポーネント（メモ化で再レンダリングを防止）
    */
-  const TodoItem: React.FC<{ todo: Todo }> = ({ todo }) => (
+  const TodoItem = memo<{ todo: Todo }>(({ todo }) => (
     <div 
       draggable
       onDragStart={(e) => handleDragStart(e, todo)}
@@ -120,7 +123,7 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onStatusChange }) => {
         ))}
       </div>
     </div>
-  );
+  ));
 
   if (todos.length === 0) {
     return <p>Todoはありません</p>;
