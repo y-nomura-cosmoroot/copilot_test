@@ -5,21 +5,45 @@ on:
   push:
 
 jobs:
-  build-check:
+  frontend-build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
-    
-    - name: Install dependencies
+
+    - name: Install frontend dependencies
       run: npm install
-    
-    - name: Build application
+
+    - name: Build frontend application
       run: npm run build
+
+  backend-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'backend/package-lock.json'
+
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm install
+
+    - name: Build backend application
+      run: |
+        cd backend
+        npm run build
