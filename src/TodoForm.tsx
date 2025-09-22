@@ -3,11 +3,11 @@
  * @author y-nomura-cosmoroot
  */
 import React, { useState } from 'react';
-import { Assignee } from './App';
+import { Assignee } from './types';
 
 interface TodoFormProps {
   assignees: Assignee[];
-  onAdd: (text: string, assignees: Assignee[]) => void;
+  onAdd: (text: string, assignees: Assignee[]) => Promise<void>;
 }
 
 /**
@@ -22,12 +22,12 @@ const TodoForm: React.FC<TodoFormProps> = ({ assignees, onAdd }) => {
   /**
    * フォーム送信時の処理
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text || selectedAssigneeIds.length === 0) return;
     const selectedAssignees = assignees.filter(a => selectedAssigneeIds.includes(a.id));
     if (selectedAssignees.length === 0) return;
-    onAdd(text, selectedAssignees);
+    await onAdd(text, selectedAssignees);
     setText('');
     setSelectedAssigneeIds([]);
   };
