@@ -1,8 +1,8 @@
-name: PR Build Check
+name: Build Check
 
-# PRが作成・更新された時にトリガー
+# コードがpushされた時にトリガー
 on:
-  pull_request:
+  push:
     branches: [ main, master ]
 
 jobs:
