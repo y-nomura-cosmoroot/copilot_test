@@ -118,11 +118,26 @@ router.post('/verify', async (req, res) => {
 
     const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
+
+    // データベースからユーザー情報を取得
+    const database = require('../config/database');
+    const user = await database.get(
+      'SELECT id, username, name, created_at FROM users WHERE id = ?',
+      [decoded.id]
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'ユーザーが見つかりません',
+        code: 'USER_NOT_FOUND'
+      });
+    }
+
     res.json({
-      message: 'トークンは有効です',
-      user: decoded,
-      expires: new Date(decoded.exp * 1000)
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      created_at: user.created_at
     });
 
   } catch (error) {

@@ -51,7 +51,11 @@ router.get('/', authenticateToken, async (req, res) => {
 // TODO作成
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { text, assignees } = req.body;
+    console.log('TODO作成リクエスト:', req.body);
+    const { text, assignee_ids, assignees } = req.body;
+
+    // assignee_ids または assignees のどちらかを使用
+    const assigneeList = assignee_ids || assignees;
 
     // バリデーション
     if (!text || text.trim().length === 0) {
@@ -61,7 +65,7 @@ router.post('/', authenticateToken, async (req, res) => {
       });
     }
 
-    if (!assignees || !Array.isArray(assignees) || assignees.length === 0) {
+    if (!assigneeList || !Array.isArray(assigneeList) || assigneeList.length === 0) {
       return res.status(400).json({
         error: '担当者を最低1人選択してください',
         code: 'MISSING_ASSIGNEES'
@@ -82,7 +86,7 @@ router.post('/', authenticateToken, async (req, res) => {
       );
 
       // 担当者を追加
-      for (let assigneeId of assignees) {
+      for (let assigneeId of assigneeList) {
         // ユーザーが存在するかチェック
         const user = await database.get(
           'SELECT id FROM users WHERE id = ?',
@@ -126,6 +130,8 @@ router.post('/', authenticateToken, async (req, res) => {
       `, [todoId]);
 
       createdTodo.assignees = assigneesList;
+
+      console.log('Created TODO response:', createdTodo);
 
       res.status(201).json({
         message: 'TODOを作成しました',
