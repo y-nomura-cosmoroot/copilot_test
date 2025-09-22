@@ -3,7 +3,6 @@ name: Build Check
 # コードがpushされた時にトリガー
 on:
   push:
-    branches: [ main, master ]
 
 jobs:
   build-check:
