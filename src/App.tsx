@@ -7,7 +7,7 @@ import TodoForm from './TodoForm';
 import TodoList from './TodoList';
 import Login from './components/Login';
 import { apiService } from './services/api';
-import { Todo, User, LoginCredentials, RegisterData, Assignee, TodoStatus } from './types';
+import { Todo, User, LoginCredentials, RegisterData, Assignee, TodoStatuss } from './types';
 
 /**
  * Todoアプリのメインコンポーネント
