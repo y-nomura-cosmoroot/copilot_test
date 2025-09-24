@@ -1,0 +1,73 @@
+name: Simple PR Review
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Get changed files
+      id: changes
+      run: |
+        # PRで変更されたJavaScript/TypeScriptファイルのみを取得
+        git diff --name-only origin/${{ github.base_ref }} HEAD | grep -E '\.(js|jsx|ts|tsx)$' > changed_js_files.txt || true
+        
+        if [ -s changed_js_files.txt ]; then
+          echo "has_js_changes=true" >> $GITHUB_OUTPUT
+          echo "files=$(cat changed_js_files.txt | tr '\n' ' ')" >> $GITHUB_OUTPUT
+        else
+          echo "has_js_changes=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Review JavaScript/TypeScript changes
+      if: steps.changes.outputs.has_js_changes == 'true'
+      uses: anthropics/claude-code-action@v1
+      with:
+        claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        prompt: |
+          このPRのReact/TypeScriptコードをレビューしてください。
+
+          変更されたファイル: ${{ steps.changes.outputs.files }}
+
+          以下の観点でレビューお願いします：
+          1. バグや潜在的な問題
+          2. Reactのベストプラクティス
+          3. TypeScriptの型安全性
+          4. コードの可読性
+
+          簡潔で実用的なフィードバックをお願いします。
+          
+    - name: Post review comment
+      if: steps.changes.outputs.has_js_changes == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const comment = `## 🤖 AI Code Review
+          
+          JavaScriptファイルの変更を検出しました。Claudeによるレビューを実行しています。
+          
+          **レビュー対象ファイル:**
+          ${process.env.CHANGED_FILES}
+          
+          詳細な分析結果は上記のClaude Code Actionログをご確認ください。
+          
+          ---
+          *自動生成されたレビューです。最終判断は人間のレビュアーが行ってください。*`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+        env:
+          CHANGED_FILES: ${{ steps.changes.outputs.files }}
