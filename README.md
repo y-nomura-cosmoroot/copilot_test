@@ -138,7 +138,8 @@ CREATE TABLE todo_assignees (
 ### フロントエンド
 - **React 18** - UIライブラリ
 - **TypeScript** - 型安全性
-- **Webpack** - バンドラー
+- **Webpack 5** - バンドラー
+- **ts-loader** - TypeScript コンパイラ
 
 ### バックエンド
 - **Node.js + Express** - サーバーサイド
@@ -146,6 +147,7 @@ CREATE TABLE todo_assignees (
 - **JWT** - 認証トークン
 - **bcrypt** - パスワードハッシュ化
 - **CORS** - クロスオリジン対応
+- **dotenv** - 環境変数管理
 
 ## 📁 プロジェクト構成
 
@@ -199,9 +201,9 @@ copilot_test/
 - [x] セキュリティ対応
 
 ### 🔄 実装予定
-- [ ] フロントエンド認証機能
-- [ ] ログイン画面UI
-- [ ] 既存TodoList→API連携
+- [x] フロントエンド認証機能
+- [x] ログイン画面UI
+- [x] 既存TodoList→API連携
 - [ ] ブラウザ通知機能
 - [ ] リアルタイム通知（WebSocket検討）
 
