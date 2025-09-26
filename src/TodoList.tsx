@@ -3,11 +3,11 @@
  * @author y-nomura-cosmoroot
  */
 import React, { useState, memo } from 'react';
-import { Todo, TodoStatus } from './App';
+import { Todo, TodoStatus } from './types';
 
 interface TodoListProps {
   todos: Todo[];
-  onStatusChange: (todoId: string, newStatus: TodoStatus) => void;
+  onStatusChange: (todoId: string, newStatus: TodoStatus) => Promise<void>;
 }
 
 /**
@@ -106,7 +106,7 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onStatusChange }) => {
         {statuses.map(statusConfig => (
           <button
             key={statusConfig.status}
-            onClick={() => onStatusChange(todo.id, statusConfig.status)}
+            onClick={async () => await onStatusChange(todo.id, statusConfig.status)}
             disabled={todo.status === statusConfig.status}
             style={{
               padding: '4px 8px',
